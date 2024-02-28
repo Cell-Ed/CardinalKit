@@ -364,6 +364,22 @@ extension HealthKitDataSync {
                 let sampleInData = Data(sampleInJsonString.utf8)
                 let sampleInObject = try JSONSerialization.jsonObject(with: sampleInData, options: []) as? [String: Any]
                 
+                // Assuming `sourceRevision` is an instance of HKSourceRevision
+                let sourceRevision: HKSourceRevision = $0.sourceRevision
+
+                let productType = sourceRevision.productType ?? "Unknown ProductType"
+                let bundleIdentifier = sourceRevision.source.bundleIdentifier // bundleIdentifier is typically non-optional
+                
+                let deviceID = "\(productType)_\(bundleIdentifier)"
+                let acquisitionProvenance = ["source_name": deviceID]
+                
+                // Add acquisition_provenance to the header
+                if var header = sampleInObject?["header"] as? [String: Any] {
+                    header["acquisition_provenance"] = acquisitionProvenance
+                    // Update the header in sampleInObject
+                    sampleInObject?["header"] = header
+                }
+                
                 return sampleInObject!
             })
             let newData = JoinData(data: samplesArray)
