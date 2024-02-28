@@ -362,7 +362,7 @@ extension HealthKitDataSync {
             try samplesArray = data.map({
                 let sampleInJsonString = try serializer.json(for: $0)
                 let sampleInData = Data(sampleInJsonString.utf8)
-                let sampleInObject = try JSONSerialization.jsonObject(with: sampleInData, options: []) as? [String: Any]
+                var sampleInObject = try JSONSerialization.jsonObject(with: sampleInData, options: []) as? [String: Any]
                 
                 // Assuming `sourceRevision` is an instance of HKSourceRevision
                 let sourceRevision: HKSourceRevision = $0.sourceRevision
@@ -379,7 +379,7 @@ extension HealthKitDataSync {
                     // Update the header in sampleInObject
                     sampleInObject?["header"] = header
                 }
-                
+
                 return sampleInObject!
             })
             let newData = JoinData(data: samplesArray)
